@@ -12,53 +12,15 @@ PRAKTOMAT_PATH = dirname(dirname(dirname(__file__)))
 
 PRAKTOMAT_ID = basename(dirname(PRAKTOMAT_PATH))
 
-match = re.match(r'''
-	(?:praktomat_)?
-	(?P<algo1>algo1_)?
-	(?P<cram>cram_)?
-	(?P<tba>tba_)?
-	(?P<mlfds>mlfds_)?
-	(?P<year>\d+)_
-	(?P<semester>WS|SS)
-	(?P<abschluss>_Abschluss)?
-	(?P<mirror>_Mirror)?
-	''', PRAKTOMAT_ID, flags=re.VERBOSE)
-if match:
-	if match.group('algo1') is not None:
-		SITE_NAME = 'Algorithmen I '
-	elif match.group('cram') is not None:
-		SITE_NAME = 'CRAM '
-	elif match.group('mlfds') is not None:
-		SITE_NAME = 'MLFDS '
-	elif match.group('tba') is not None:
-		SITE_NAME = 'Theorembeweiser '
-	else:
-		SITE_NAME = 'Programmieren '
-
-	if match.group('abschluss'):
-		SITE_NAME += "Abschlussaufgaben "
-
-	year = int(match.group('year'))
-	if match.group('semester') == "WS":
-		SITE_NAME += "Wintersemester %d/%d" % (year, year+1)
-	else:
-		SITE_NAME += "Sommersemester %d" % year
-
-	if match.group('mirror') is not None:
-		SITE_NAME += " (Mirror)"
-		MIRROR = True
-	else:
-		MIRROR = False
-else:
-	raise NotImplementedError("Autoconfig for PRAKTOMAT_ID %s not possible", PRAKTOMAT_ID)
-
+SITE_NAME = "pp17"
+MIRROR = False
 
 # The URL where this site is reachable. 'http://localhost:8000/' in case of the
 # developmentserver.
-BASE_HOST = 'https://praktomat.cs.kit.edu'
+BASE_HOST = 'http://idvm-infk-department04.inf.ethz.ch'
 BASE_PATH = '/' + PRAKTOMAT_ID + '/'
 
-ALLOWED_HOSTS = [ 'praktomat.cs.kit.edu', ]
+ALLOWED_HOSTS = [ 'idvm-infk-department04.inf.ethz.ch', ]
 
 # URL to use when referring to static files.
 STATIC_URL = BASE_PATH + 'static/'
@@ -99,7 +61,8 @@ DEBUG = MIRROR
 DATABASES = {
     'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME':   PRAKTOMAT_ID,
+            'NAME':   'praktomat_default',
+            'USER': 'praktomat',
     }
 }
 
@@ -125,8 +88,8 @@ JPLAGJAR = '/srv/praktomat/contrib/jplag.jar'
 # Our VM has 4 cores, so lets try to use them
 NUMBER_OF_TASKS_TO_BE_CHECKED_IN_PARALLEL = 6
 # But not with Isabelle, which is memory bound
-if match.group('tba') is not None:
-    NUMBER_OF_TASKS_TO_BE_CHECKED_IN_PARALLEL = 1
+#if match.group('tba') is not None:
+#    NUMBER_OF_TASKS_TO_BE_CHECKED_IN_PARALLEL = 1
 
 # Finally load defaults for missing setttings.
 import defaults
